@@ -21,6 +21,7 @@ import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as EmailVerifiedRouteImport } from './routes/email-verified'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as BlogRouteImport } from './routes/blog'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as StudentRouteImport } from './routes/_student'
 import { Route as IndexRouteImport } from './routes/index'
@@ -129,6 +130,11 @@ const BlogRoute = BlogRouteImport.update({
   path: '/blog',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -154,14 +160,14 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   getParentRoute: () => BlogRoute,
 } as any)
 const AuthConfirmRoute = AuthConfirmRouteImport.update({
-  id: '/auth/confirm',
-  path: '/auth/confirm',
-  getParentRoute: () => rootRouteImport,
+  id: '/confirm',
+  path: '/confirm',
+  getParentRoute: () => AuthRoute,
 } as any)
 const AuthCallbackRoute = AuthCallbackRouteImport.update({
-  id: '/auth/callback',
-  path: '/auth/callback',
-  getParentRoute: () => rootRouteImport,
+  id: '/callback',
+  path: '/callback',
+  getParentRoute: () => AuthRoute,
 } as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/users',
@@ -367,6 +373,7 @@ const AdminUsersAnalyticsRoute = AdminUsersAnalyticsRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/auth': typeof AuthRouteWithChildren
   '/blog': typeof BlogRouteWithChildren
   '/cookies': typeof CookiesRoute
   '/email-verified': typeof EmailVerifiedRoute
@@ -426,6 +433,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRouteWithChildren
   '/blog': typeof BlogRouteWithChildren
   '/cookies': typeof CookiesRoute
   '/email-verified': typeof EmailVerifiedRoute
@@ -487,6 +495,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_student': typeof StudentRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
+  '/auth': typeof AuthRouteWithChildren
   '/blog': typeof BlogRouteWithChildren
   '/cookies': typeof CookiesRoute
   '/email-verified': typeof EmailVerifiedRoute
@@ -549,6 +558,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/auth'
     | '/blog'
     | '/cookies'
     | '/email-verified'
@@ -608,6 +618,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth'
     | '/blog'
     | '/cookies'
     | '/email-verified'
@@ -668,6 +679,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_student'
     | '/admin'
+    | '/auth'
     | '/blog'
     | '/cookies'
     | '/email-verified'
@@ -730,6 +742,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   StudentRoute: typeof StudentRouteWithChildren
   AdminRoute: typeof AdminRouteWithChildren
+  AuthRoute: typeof AuthRouteWithChildren
   BlogRoute: typeof BlogRouteWithChildren
   CookiesRoute: typeof CookiesRoute
   EmailVerifiedRoute: typeof EmailVerifiedRoute
@@ -742,8 +755,6 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
-  AuthCallbackRoute: typeof AuthCallbackRoute
-  AuthConfirmRoute: typeof AuthConfirmRoute
   ApiPublicChatCleanupRoute: typeof ApiPublicChatCleanupRoute
   ApiPublicHealthRoute: typeof ApiPublicHealthRoute
 }
@@ -834,6 +845,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -871,17 +889,17 @@ declare module '@tanstack/react-router' {
     }
     '/auth/confirm': {
       id: '/auth/confirm'
-      path: '/auth/confirm'
+      path: '/confirm'
       fullPath: '/auth/confirm'
       preLoaderRoute: typeof AuthConfirmRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthRoute
     }
     '/auth/callback': {
       id: '/auth/callback'
-      path: '/auth/callback'
+      path: '/callback'
       fullPath: '/auth/callback'
       preLoaderRoute: typeof AuthCallbackRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthRoute
     }
     '/admin/users': {
       id: '/admin/users'
@@ -1271,6 +1289,18 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface AuthRouteChildren {
+  AuthCallbackRoute: typeof AuthCallbackRoute
+  AuthConfirmRoute: typeof AuthConfirmRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthCallbackRoute: AuthCallbackRoute,
+  AuthConfirmRoute: AuthConfirmRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
 interface BlogRouteChildren {
   BlogSlugRoute: typeof BlogSlugRoute
 }
@@ -1285,6 +1315,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   StudentRoute: StudentRouteWithChildren,
   AdminRoute: AdminRouteWithChildren,
+  AuthRoute: AuthRouteWithChildren,
   BlogRoute: BlogRouteWithChildren,
   CookiesRoute: CookiesRoute,
   EmailVerifiedRoute: EmailVerifiedRoute,
@@ -1297,8 +1328,6 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
-  AuthCallbackRoute: AuthCallbackRoute,
-  AuthConfirmRoute: AuthConfirmRoute,
   ApiPublicChatCleanupRoute: ApiPublicChatCleanupRoute,
   ApiPublicHealthRoute: ApiPublicHealthRoute,
 }
