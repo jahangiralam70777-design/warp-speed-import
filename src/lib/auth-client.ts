@@ -249,9 +249,19 @@ export async function resetPasswordForEmail(email: string) {
   await gateAuth("password_reset");
   const redirectTo =
     typeof window !== "undefined" ? `${window.location.origin}/reset-password` : undefined;
+  console.log("[auth] resetPasswordForEmail →", { email, redirectTo });
   const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
-  if (error) throw error;
+  if (error) {
+    console.error("[auth] resetPasswordForEmail error:", error);
+    // Re-throw with a friendlier message for common cases.
+    const m = (error.message || "").toLowerCase();
+    if (m.includes("rate") || m.includes("too many")) {
+      throw new Error("Too many requests. Please wait a minute and try again.");
+    }
+    throw error;
+  }
 }
+
 
 export async function updatePassword(newPassword: string) {
   const { error } = await supabase.auth.updateUser({ password: newPassword });
