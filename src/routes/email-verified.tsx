@@ -96,7 +96,7 @@ function EmailVerified() {
       } catch {
         /* ignore */
       }
-      console.log("[email-verified] verification succeeded");
+      console.warn("[email-verified] verification succeeded");
       setPhase("success");
       // Auto-forward to dashboard after the success animation plays.
       // Root-level redirect logic also handles this once the auth store
@@ -107,7 +107,7 @@ function EmailVerified() {
     };
 
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("[email-verified] auth event:", event, !!session);
+      console.warn("[email-verified] auth event:", event, !!session);
       if (event === "SIGNED_IN" && session && phase === "verifying") {
         void success();
       }
@@ -127,7 +127,7 @@ function EmailVerified() {
           hashParams.get("error_description") ||
           hashParams.get("error");
 
-        console.info("[email-verified] callback diagnostics", {
+        console.warn("[email-verified] callback diagnostics", {
           path: url.pathname,
           searchKeys: Array.from(url.searchParams.keys()),
           hashKeys: Array.from(hashParams.keys()),
@@ -146,7 +146,7 @@ function EmailVerified() {
         // --- 1. PKCE flow --------------------------------------
         if (code) {
           const { data, error } = await supabase.auth.exchangeCodeForSession(window.location.href);
-          console.info("[email-verified] exchangeCodeForSession result", {
+          console.warn("[email-verified] exchangeCodeForSession result", {
             ok: !error,
             hasSession: Boolean(data?.session),
             hasUser: Boolean(data?.user),
@@ -176,7 +176,7 @@ function EmailVerified() {
             type: otpType,
             token_hash: tokenHash,
           });
-          console.info("[email-verified] verifyOtp result", {
+          console.warn("[email-verified] verifyOtp result", {
             ok: !error,
             hasSession: Boolean(data?.session),
             hasUser: Boolean(data?.user),

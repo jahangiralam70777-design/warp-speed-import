@@ -299,7 +299,7 @@ function RootInner() {
       h.includes("error=") ||
       h.includes("error_description=");
     if (hasAuthToken) {
-      console.info("[auth-callback-rescue] forwarding callback to /email-verified", {
+      console.warn("[auth-callback-rescue] forwarding callback to /email-verified", {
         fromPath: p,
         searchKeys: Array.from(s.keys()),
         hasHash: Boolean(h),
