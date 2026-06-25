@@ -440,9 +440,9 @@ const FOOTER_DEFAULT: FooterDraft = {
   copyright: `© ${new Date().getFullYear()} CA Aspire BD`,
   contact: {
     support_label: "Support",
-    support_email: "help@caaspirebd.com",
+    support_email: "help@caaspirebd.xyz",
     sales_label: "Sales",
-    sales_email: "sales@caaspirebd.com",
+    sales_email: "sales@caaspirebd.xyz",
     hq_label: "HQ",
     hq_value: "Dhaka",
   },

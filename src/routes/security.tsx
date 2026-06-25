@@ -68,8 +68,8 @@ function SecurityPage() {
           body: (
             <p>
               If you believe you've found a security vulnerability, please email{" "}
-              <a className="underline hover:text-foreground" href="mailto:security@caaspirebd.com">
-                security@caaspirebd.com
+              <a className="underline hover:text-foreground" href="mailto:security@caaspirebd.xyz">
+                security@caaspirebd.xyz
               </a>
               . We'll acknowledge your report and work with you to resolve it quickly.
             </p>
