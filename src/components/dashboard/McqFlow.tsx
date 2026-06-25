@@ -758,6 +758,124 @@ export function McqFlow() {
   }
 
   const inPractice = step === 3;
+
+  // "Ready to start" panel — rendered inline directly under the selected
+  // chapter row (closes over current state).
+  const renderReadyPanel = () => {
+    if (!pendingChapter) return null;
+    const cprog = chapterProgressMap.get(pendingChapter.id);
+    const total = cprog?.total ?? 0;
+    const accuracy = cprog?.accuracy ?? 0;
+    const completed = cprog?.completed ?? 0;
+    const estMin = Math.max(1, Math.round((total || 10) * 0.6));
+    return (
+      <div className="glass shadow-glow relative overflow-hidden rounded-3xl p-6">
+        <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[var(--neon-purple)]/25 blur-3xl" />
+        <div className="pointer-events-none absolute -left-16 -bottom-16 h-48 w-48 rounded-full bg-[var(--neon-blue)]/20 blur-3xl" />
+        <div className="relative flex flex-wrap items-start justify-between gap-4">
+          <div className="min-w-0">
+            <span className="inline-flex items-center gap-1 rounded-full bg-[var(--neon-purple)]/15 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-[var(--neon-purple)] ring-1 ring-[var(--neon-purple)]/30">
+              <Play className="h-3 w-3" /> Ready to start
+            </span>
+            <h3 className="font-display mt-3 text-2xl font-bold leading-snug">
+              {pendingChapter.name}
+            </h3>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {levelName} · {subjectName}
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              const pc = pendingChapter;
+              setPendingChapter(null);
+              gotoChapter(pc.id, pc.name);
+            }}
+            className="bg-cta-gradient group inline-flex items-center gap-2 rounded-2xl px-6 py-3 text-sm font-bold text-white shadow-glow transition-transform hover:scale-[1.03]"
+          >
+            <Play className="h-4 w-4" /> Start Practice{" "}
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </button>
+        </div>
+        <div className="relative mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <SummaryStat icon={Layers} label="Total Questions" value={String(total || "—")} tone="var(--neon-purple)" />
+          <SummaryStat icon={Clock} label="Estimated Time" value={`${estMin} min`} tone="var(--neon-blue)" />
+          <SummaryStat icon={Target} label="Previous Accuracy" value={completed ? `${accuracy}%` : "—"} tone="oklch(0.75 0.18 150)" />
+          <SummaryStat icon={Trophy} label="Recommended Goal" value="80%+" tone="oklch(0.82 0.16 85)" />
+        </div>
+        <div className="relative mt-5 rounded-2xl border border-border/60 bg-background/40 p-4">
+          <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+            <Settings2 className="h-3.5 w-3.5" /> Session settings
+          </p>
+          <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div>
+              <label className="mb-1 flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                <Shuffle className="h-3 w-3" /> Question count
+              </label>
+              <div className="flex flex-wrap gap-1.5">
+                {(["10", "25", "50", "all"] as const).map((c) => (
+                  <button
+                    key={c}
+                    onClick={() => setSessionCount(c)}
+                    className={`rounded-full px-3 py-1 text-[11px] font-semibold capitalize transition-all ${sessionCount === c ? "bg-cta-gradient text-white shadow-glow" : "glass text-foreground/70 hover:text-foreground"}`}
+                  >
+                    {c === "all" ? "All" : c}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className="mb-1 flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                <Timer className="h-3 w-3" /> Timer
+              </label>
+              <div className="flex flex-wrap gap-1.5">
+                {([0, 5, 10, 20] as const).map((m) => (
+                  <button
+                    key={m}
+                    onClick={() => {
+                      setSessionTimerMin(m);
+                      setTimeLeft(m * 60);
+                    }}
+                    className={`rounded-full px-3 py-1 text-[11px] font-semibold transition-all ${sessionTimerMin === m ? "bg-cta-gradient text-white shadow-glow" : "glass text-foreground/70 hover:text-foreground"}`}
+                  >
+                    {m === 0 ? "Off" : `${m}m`}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className="mb-1 flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                <Lightbulb className="h-3 w-3" /> Mode
+              </label>
+              <div className="flex flex-wrap gap-1.5">
+                <button
+                  onClick={() => setSessionMode("instant")}
+                  className={`rounded-full px-3 py-1 text-[11px] font-semibold transition-all ${sessionMode === "instant" ? "bg-cta-gradient text-white shadow-glow" : "glass text-foreground/70 hover:text-foreground"}`}
+                >
+                  Instant explanation
+                </button>
+                <button
+                  onClick={() => setSessionMode("submit-end")}
+                  className={`rounded-full px-3 py-1 text-[11px] font-semibold transition-all ${sessionMode === "submit-end" ? "bg-cta-gradient text-white shadow-glow" : "glass text-foreground/70 hover:text-foreground"}`}
+                >
+                  Submit at end
+                </button>
+              </div>
+            </div>
+          </div>
+          <p className="mt-2 text-[10px] text-muted-foreground">
+            {timeLeft > 0
+              ? `Live countdown will auto-submit after ${sessionTimerMin}m.`
+              : "Untimed practice."}{" "}
+            · Active scope:{" "}
+            {sessionCount === "all"
+              ? `${total || 0} MCQs`
+              : `${Math.min(Number(sessionCount), total || 0)} of ${total || 0}`}
+          </p>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className={`grid grid-cols-1 gap-5 ${inPractice ? "xl:grid-cols-[1fr_320px]" : ""}`}>
       <div className="min-w-0 space-y-5">
