@@ -205,8 +205,13 @@ export async function signUpWithEmail(input: {
       throw e;
     }
   }
+  // Supabase appends auth tokens (?code= for PKCE, ?token_hash= for OTP, or
+  // #access_token=… for legacy implicit flow) to the redirect URL. The target
+  // MUST be a public, non-auth-gated page that exchanges the token and
+  // creates the session — otherwise the auth guard redirects to /login first
+  // and the verification token is silently lost.
   const redirectTo =
-    typeof window !== "undefined" ? `${window.location.origin}/dashboard` : undefined;
+    typeof window !== "undefined" ? `${window.location.origin}/email-verified` : undefined;
   const { data, error } = await supabase.auth.signUp({
     email: input.email,
     password: input.password,
