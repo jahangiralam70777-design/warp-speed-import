@@ -30,10 +30,14 @@ export const Route = createFileRoute("/_student")({
         rpc: (n: string, a: Record<string, unknown>) => Promise<{ data: boolean | null }>;
       }).rpc("is_user_banned", { _user_id: uid }),
     ]);
+    // New signups may not have a `profiles` row yet (created async by trigger).
+    // Treat missing profile as benign — gate only on an explicit
+    // deleted/suspended row or a true ban. Prevents post-signup bounces to
+    // /login that previously required a manual page refresh.
     if (
-      !profile ||
-      profile.deleted_at ||
-      ["suspended", "deleted", "banned"].includes(profile.status ?? "") ||
+      (profile &&
+        (profile.deleted_at ||
+          ["suspended", "deleted", "banned"].includes(profile.status ?? ""))) ||
       banned === true
     ) {
       await supabase.auth.signOut().catch(() => undefined);
