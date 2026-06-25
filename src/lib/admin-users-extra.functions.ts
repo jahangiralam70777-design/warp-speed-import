@@ -249,13 +249,34 @@ export const adminSendPasswordReset = createServerFn({ method: "POST" })
     const { data: u } = await (supabaseAdmin.auth.admin as any).getUserById(data.id);
     const email = u?.user?.email;
     if (!email) throw new Error("User has no email on file");
-    // SECURITY: do NOT accept redirectTo from clients (open-redirect / phishing
-    // surface). Rely on the redirect configured in Supabase project settings.
+    // SECURITY: redirectTo is NOT taken from the client. We derive the origin
+    // from a server-known PUBLIC_SITE_URL env, falling back to the request's
+    // own host header. This guarantees the recovery email link lands on our
+    // /reset-password page instead of the Supabase default Site URL.
+    const envOrigin =
+      process.env.PUBLIC_SITE_URL ||
+      process.env.VITE_PUBLIC_SITE_URL ||
+      (typeof process.env.SUPABASE_URL === "string" ? undefined : undefined);
+    let origin = envOrigin;
+    if (!origin) {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const req = (context as any).request as Request | undefined;
+        if (req) origin = new URL(req.url).origin;
+      } catch {
+        /* ignore */
+      }
+    }
+    const redirectTo = origin ? `${origin.replace(/\/$/, "")}/reset-password` : undefined;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabaseAdmin.auth as any).resetPasswordForEmail(email);
+    const { error } = await (supabaseAdmin.auth as any).resetPasswordForEmail(
+      email,
+      redirectTo ? { redirectTo } : undefined,
+    );
     if (error) throw error;
-    return { ok: true, email };
+    return { ok: true, email, redirectTo };
   });
+
 // Period-over-period KPI trends (real timestamped deltas)
 export const adminUserTrends = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
