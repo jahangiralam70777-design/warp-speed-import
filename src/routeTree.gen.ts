@@ -27,6 +27,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthConfirmRouteImport } from './routes/auth.confirm'
+import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminSystemHealthRouteImport } from './routes/admin.system-health'
 import { Route as AdminSiteEditorRouteImport } from './routes/admin.site-editor'
@@ -155,6 +156,11 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
 const AuthConfirmRoute = AuthConfirmRouteImport.update({
   id: '/auth/confirm',
   path: '/auth/confirm',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth/callback',
+  path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
@@ -408,6 +414,7 @@ export interface FileRoutesByFullPath {
   '/admin/site-editor': typeof AdminSiteEditorRoute
   '/admin/system-health': typeof AdminSystemHealthRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
+  '/auth/callback': typeof AuthCallbackRoute
   '/auth/confirm': typeof AuthConfirmRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -465,6 +472,7 @@ export interface FileRoutesByTo {
   '/admin/site': typeof AdminSiteRoute
   '/admin/site-editor': typeof AdminSiteEditorRoute
   '/admin/system-health': typeof AdminSystemHealthRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/auth/confirm': typeof AuthConfirmRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/admin': typeof AdminIndexRoute
@@ -526,6 +534,7 @@ export interface FileRoutesById {
   '/admin/site-editor': typeof AdminSiteEditorRoute
   '/admin/system-health': typeof AdminSystemHealthRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
+  '/auth/callback': typeof AuthCallbackRoute
   '/auth/confirm': typeof AuthConfirmRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -587,6 +596,7 @@ export interface FileRouteTypes {
     | '/admin/site-editor'
     | '/admin/system-health'
     | '/admin/users'
+    | '/auth/callback'
     | '/auth/confirm'
     | '/blog/$slug'
     | '/admin/'
@@ -644,6 +654,7 @@ export interface FileRouteTypes {
     | '/admin/site'
     | '/admin/site-editor'
     | '/admin/system-health'
+    | '/auth/callback'
     | '/auth/confirm'
     | '/blog/$slug'
     | '/admin'
@@ -704,6 +715,7 @@ export interface FileRouteTypes {
     | '/admin/site-editor'
     | '/admin/system-health'
     | '/admin/users'
+    | '/auth/callback'
     | '/auth/confirm'
     | '/blog/$slug'
     | '/admin/'
@@ -730,6 +742,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
+  AuthCallbackRoute: typeof AuthCallbackRoute
   AuthConfirmRoute: typeof AuthConfirmRoute
   ApiPublicChatCleanupRoute: typeof ApiPublicChatCleanupRoute
   ApiPublicHealthRoute: typeof ApiPublicHealthRoute
@@ -861,6 +874,13 @@ declare module '@tanstack/react-router' {
       path: '/auth/confirm'
       fullPath: '/auth/confirm'
       preLoaderRoute: typeof AuthConfirmRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/users': {
@@ -1277,6 +1297,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
+  AuthCallbackRoute: AuthCallbackRoute,
   AuthConfirmRoute: AuthConfirmRoute,
   ApiPublicChatCleanupRoute: ApiPublicChatCleanupRoute,
   ApiPublicHealthRoute: ApiPublicHealthRoute,
