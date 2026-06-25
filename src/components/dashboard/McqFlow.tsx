@@ -1261,8 +1261,8 @@ export function McqFlow() {
                               ? "from-[var(--neon-blue)]/15 to-[var(--neon-blue)]/5 text-[var(--neon-blue)] ring-[var(--neon-blue)]/30"
                               : "from-muted/40 to-muted/10 text-muted-foreground ring-border";
                       return (
+                        <div key={c.id} className="space-y-3">
                         <button
-                          key={c.id}
                           onClick={() =>
                             setPendingChapter({
                               id: c.id,
@@ -1316,6 +1316,8 @@ export function McqFlow() {
                           </div>
                           <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-foreground" />
                         </button>
+                        {isActive && pendingChapter && renderReadyPanel()}
+                        </div>
                       );
                     })}
                   </div>
