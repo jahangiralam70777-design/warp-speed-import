@@ -96,7 +96,7 @@ function EmailVerified() {
       } catch {
         /* ignore */
       }
-      console.log("[email-verified] verification succeeded");
+      console.warn("[email-verified] verification succeeded");
       setPhase("success");
       // Auto-forward to dashboard after the success animation plays.
       // Root-level redirect logic also handles this once the auth store
@@ -107,7 +107,7 @@ function EmailVerified() {
     };
 
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("[email-verified] auth event:", event, !!session);
+      console.warn("[email-verified] auth event:", event, !!session);
       if (event === "SIGNED_IN" && session && phase === "verifying") {
         void success();
       }
@@ -120,18 +120,38 @@ function EmailVerified() {
         const tokenHash = url.searchParams.get("token_hash");
         const type = (url.searchParams.get("type") || "").toLowerCase();
         const hash = window.location.hash || "";
+        const hashParams = new URLSearchParams(hash.startsWith("#") ? hash.slice(1) : hash);
         const errParam =
-          url.searchParams.get("error_description") || url.searchParams.get("error");
+          url.searchParams.get("error_description") ||
+          url.searchParams.get("error") ||
+          hashParams.get("error_description") ||
+          hashParams.get("error");
+
+        console.warn("[email-verified] callback diagnostics", {
+          path: url.pathname,
+          searchKeys: Array.from(url.searchParams.keys()),
+          hashKeys: Array.from(hashParams.keys()),
+          hasCode: Boolean(code),
+          hasTokenHash: Boolean(tokenHash),
+          type,
+        });
 
         if (errParam) {
           const decoded = decodeURIComponent(errParam);
           const expired = /expired|otp_expired|invalid/i.test(decoded);
+          window.history.replaceState({}, "", window.location.pathname);
           return fail(decoded, expired);
         }
 
         // --- 1. PKCE flow --------------------------------------
         if (code) {
-          const { error } = await supabase.auth.exchangeCodeForSession(window.location.href);
+          const { data, error } = await supabase.auth.exchangeCodeForSession(window.location.href);
+          console.warn("[email-verified] exchangeCodeForSession result", {
+            ok: !error,
+            hasSession: Boolean(data?.session),
+            hasUser: Boolean(data?.user),
+            error: error?.message,
+          });
           if (error) {
             const expired = /expired|invalid|used/i.test(error.message);
             return fail(error.message, expired);
@@ -152,9 +172,15 @@ function EmailVerified() {
             | "email"
             | "email_change"
             | "recovery";
-          const { error } = await supabase.auth.verifyOtp({
+          const { data, error } = await supabase.auth.verifyOtp({
             type: otpType,
             token_hash: tokenHash,
+          });
+          console.warn("[email-verified] verifyOtp result", {
+            ok: !error,
+            hasSession: Boolean(data?.session),
+            hasUser: Boolean(data?.user),
+            error: error?.message,
           });
           if (error) {
             const expired = /expired|invalid|used/i.test(error.message);

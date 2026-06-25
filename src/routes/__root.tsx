@@ -160,6 +160,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: appCss,
       },
     ],
+    scripts: [
+      {
+        children: AUTH_CALLBACK_RESCUE_SCRIPT,
+      },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
@@ -168,6 +173,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 const THEME_INIT_SCRIPT = `(function(){try{document.documentElement.classList.toggle('dark',localStorage.getItem('edumaster.theme')==='dark');}catch(e){document.documentElement.classList.remove('dark');}})();`;
+const AUTH_CALLBACK_RESCUE_SCRIPT = `(function(){try{var l=window.location;var p=l.pathname;var s=new URLSearchParams(l.search||'');var h=l.hash||'';if(p==='/email-verified'||p==='/auth/confirm'||p==='/auth/callback'||p==='/reset-password'||p==='/forgot-password')return;var has=s.has('code')||s.has('token_hash')||s.has('token')||s.has('error')||s.has('error_description')||h.indexOf('access_token=')>-1||h.indexOf('refresh_token=')>-1||h.indexOf('type=signup')>-1||h.indexOf('type=magiclink')>-1||h.indexOf('type=invite')>-1||h.indexOf('error=')>-1||h.indexOf('error_description=')>-1;if(has){try{sessionStorage.setItem('caaspire.auth_callback_rescue',JSON.stringify({path:p,searchKeys:Array.from(s.keys()),hasHash:!!h,ts:Date.now()}));}catch(e){}l.replace('/email-verified'+(l.search||'')+h);}}catch(e){}})();`;
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
@@ -286,11 +292,22 @@ function RootInner() {
     const hasAuthToken =
       s.has("code") ||
       s.has("token_hash") ||
+      s.has("token") ||
+      s.has("error") ||
+      s.has("error_description") ||
       h.includes("access_token=") ||
+      h.includes("refresh_token=") ||
       h.includes("type=signup") ||
       h.includes("type=magiclink") ||
-      h.includes("type=invite");
+      h.includes("type=invite") ||
+      h.includes("error=") ||
+      h.includes("error_description=");
     if (hasAuthToken) {
+      console.warn("[auth-callback-rescue] forwarding callback to /email-verified", {
+        fromPath: p,
+        searchKeys: Array.from(s.keys()),
+        hasHash: Boolean(h),
+      });
       window.location.replace(`/email-verified${window.location.search}${h}`);
     }
   }, []);
