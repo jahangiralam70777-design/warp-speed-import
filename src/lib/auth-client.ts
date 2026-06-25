@@ -222,8 +222,22 @@ export async function signUpWithEmail(input: {
   });
   if (error) {
     if (/already.*registered|already.*exists|user.*exists/i.test(error.message ?? "")) {
+      // Distinguish actually-banned accounts from ordinary already-registered
+      // emails (e.g. demoted admins). Banned → support; otherwise → sign-in/reset.
+      try {
+        const { checkEmailBanStatus } = await import("@/lib/check-email-status.functions");
+        const r = await checkEmailBanStatus({ data: { email: input.email } });
+        if (r?.banned) {
+          throw new Error(
+            "This account has been banned. Please contact support — banned accounts cannot be re-registered.",
+          );
+        }
+      } catch (e) {
+        if (e instanceof Error && /banned/i.test(e.message)) throw e;
+        // probe failed → fall through to neutral message
+      }
       throw new Error(
-        "This email is already registered. If your account was banned, please contact support — banned accounts cannot be re-registered.",
+        "This email is already registered. Please sign in or use Forgot Password to reset.",
       );
     }
     throw error;
