@@ -270,6 +270,31 @@ function RootInner() {
     installGlobalErrorReporter();
   }, []);
 
+  // Catch-all: if Supabase redirects back to Site URL (typically "/") with
+  // auth tokens on the URL (?code=, ?token_hash=, or #access_token=...),
+  // forward to /email-verified so the canonical handler exchanges the token
+  // and renders the success UI. Without this the user lands on the homepage
+  // (or worse, the raw GoTrue JSON `{}` response) with tokens silently
+  // dropped.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const p = window.location.pathname;
+    if (p === "/email-verified" || p === "/auth/confirm" || p === "/auth/callback") return;
+    if (p === "/reset-password" || p === "/forgot-password") return;
+    const s = new URLSearchParams(window.location.search);
+    const h = window.location.hash || "";
+    const hasAuthToken =
+      s.has("code") ||
+      s.has("token_hash") ||
+      h.includes("access_token=") ||
+      h.includes("type=signup") ||
+      h.includes("type=magiclink") ||
+      h.includes("type=invite");
+    if (hasAuthToken) {
+      window.location.replace(`/email-verified${window.location.search}${h}`);
+    }
+  }, []);
+
   useEffect(() => {
     if (authVersion === lastAuthVersion.current) return;
     lastAuthVersion.current = authVersion;
