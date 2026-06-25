@@ -160,6 +160,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: appCss,
       },
     ],
+    scripts: [
+      {
+        children: AUTH_CALLBACK_RESCUE_SCRIPT,
+      },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
@@ -176,7 +181,6 @@ function RootShell({ children }: { children: React.ReactNode }) {
       <head>
         <HeadContent />
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
-        <script dangerouslySetInnerHTML={{ __html: AUTH_CALLBACK_RESCUE_SCRIPT }} />
       </head>
       <body suppressHydrationWarning>
         {children}
