@@ -73,7 +73,7 @@ function PrivacyPage() {
           body: (
             <p>
               You can access, update, export, or delete your account data at any time from your
-              profile settings, or by emailing legal@caaspirebd.com.
+              profile settings, or by emailing legal@caaspirebd.xyz.
             </p>
           ),
         },

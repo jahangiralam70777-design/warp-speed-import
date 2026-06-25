@@ -987,7 +987,7 @@ function DangerZone({ onLogout }: { onLogout: () => void }) {
           cta="Contact support"
           destructive
           onClick={() => {
-            window.location.href = "mailto:support@caaspirebd.com?subject=Delete%20my%20account";
+            window.location.href = "mailto:support@caaspirebd.xyz?subject=Delete%20my%20account";
           }}
         />
       </div>

@@ -62,8 +62,8 @@ export function LegalPage({ title, intro, updated, sections }: LegalPageProps) {
 
         <p className="mt-8 text-center text-xs text-muted-foreground">
           Questions? Email{" "}
-          <a className="underline hover:text-foreground" href="mailto:legal@caaspirebd.com">
-            legal@caaspirebd.com
+          <a className="underline hover:text-foreground" href="mailto:legal@caaspirebd.xyz">
+            legal@caaspirebd.xyz
           </a>
         </p>
       </div>

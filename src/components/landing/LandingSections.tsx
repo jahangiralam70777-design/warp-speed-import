@@ -1189,9 +1189,9 @@ const FOOTER_FALLBACK: FooterContent = {
   copyright: `© ${new Date().getFullYear()} CA Aspire BD · Practice. Learn. Become a CA.`,
   contact: {
     support_label: "Support",
-    support_email: "help@caaspirebd.com",
+    support_email: "help@caaspirebd.xyz",
     sales_label: "Sales",
-    sales_email: "sales@caaspirebd.com",
+    sales_email: "sales@caaspirebd.xyz",
     hq_label: "HQ",
     hq_value: "Dhaka · Chattogram · Sylhet",
   },
@@ -1209,8 +1209,8 @@ const FOOTER_FALLBACK: FooterContent = {
       title: "Support",
       links: [
         { label: "Help & FAQ", href: "#faq" },
-        { label: "Contact Support", href: "mailto:help@caaspirebd.com" },
-        { label: "Sales Enquiry", href: "mailto:sales@caaspirebd.com" },
+        { label: "Contact Support", href: "mailto:help@caaspirebd.xyz" },
+        { label: "Sales Enquiry", href: "mailto:sales@caaspirebd.xyz" },
         { label: "Sign In", href: "/login" },
       ],
     },
