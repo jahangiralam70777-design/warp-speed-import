@@ -26,6 +26,7 @@ import { Route as StudentRouteImport } from './routes/_student'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as AuthConfirmRouteImport } from './routes/auth.confirm'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminSystemHealthRouteImport } from './routes/admin.system-health'
 import { Route as AdminSiteEditorRouteImport } from './routes/admin.site-editor'
@@ -150,6 +151,11 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
   getParentRoute: () => BlogRoute,
+} as any)
+const AuthConfirmRoute = AuthConfirmRouteImport.update({
+  id: '/auth/confirm',
+  path: '/auth/confirm',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/users',
@@ -402,6 +408,7 @@ export interface FileRoutesByFullPath {
   '/admin/site-editor': typeof AdminSiteEditorRoute
   '/admin/system-health': typeof AdminSystemHealthRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
+  '/auth/confirm': typeof AuthConfirmRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/users/analytics': typeof AdminUsersAnalyticsRoute
@@ -458,6 +465,7 @@ export interface FileRoutesByTo {
   '/admin/site': typeof AdminSiteRoute
   '/admin/site-editor': typeof AdminSiteEditorRoute
   '/admin/system-health': typeof AdminSystemHealthRoute
+  '/auth/confirm': typeof AuthConfirmRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/admin': typeof AdminIndexRoute
   '/admin/users/analytics': typeof AdminUsersAnalyticsRoute
@@ -518,6 +526,7 @@ export interface FileRoutesById {
   '/admin/site-editor': typeof AdminSiteEditorRoute
   '/admin/system-health': typeof AdminSystemHealthRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
+  '/auth/confirm': typeof AuthConfirmRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/users/analytics': typeof AdminUsersAnalyticsRoute
@@ -578,6 +587,7 @@ export interface FileRouteTypes {
     | '/admin/site-editor'
     | '/admin/system-health'
     | '/admin/users'
+    | '/auth/confirm'
     | '/blog/$slug'
     | '/admin/'
     | '/admin/users/analytics'
@@ -634,6 +644,7 @@ export interface FileRouteTypes {
     | '/admin/site'
     | '/admin/site-editor'
     | '/admin/system-health'
+    | '/auth/confirm'
     | '/blog/$slug'
     | '/admin'
     | '/admin/users/analytics'
@@ -693,6 +704,7 @@ export interface FileRouteTypes {
     | '/admin/site-editor'
     | '/admin/system-health'
     | '/admin/users'
+    | '/auth/confirm'
     | '/blog/$slug'
     | '/admin/'
     | '/admin/users/analytics'
@@ -718,6 +730,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
+  AuthConfirmRoute: typeof AuthConfirmRoute
   ApiPublicChatCleanupRoute: typeof ApiPublicChatCleanupRoute
   ApiPublicHealthRoute: typeof ApiPublicHealthRoute
 }
@@ -842,6 +855,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/blog/$slug'
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof BlogRoute
+    }
+    '/auth/confirm': {
+      id: '/auth/confirm'
+      path: '/auth/confirm'
+      fullPath: '/auth/confirm'
+      preLoaderRoute: typeof AuthConfirmRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/admin/users': {
       id: '/admin/users'
@@ -1257,6 +1277,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
+  AuthConfirmRoute: AuthConfirmRoute,
   ApiPublicChatCleanupRoute: ApiPublicChatCleanupRoute,
   ApiPublicHealthRoute: ApiPublicHealthRoute,
 }
